@@ -1,1 +1,17 @@
 version: '3.1'
+
+#docker run \
+#        --gpus all \
+#        --name $(whoami)$(($RANDOM % 101)) \
+#        --rm \
+#        -it \
+#        -w="/home/$(whoami)" \
+#        -v /mnt/uasisdepo/users/$(whoami):/home/$(whoami) \
+#        -v /mnt/uasisdepo/:/mnt/uasisdepo:ro \
+#uasis/ubuntu18.04_cuda10.2_py3_tf2.0.0_jupyter:latest /bin/bash
+
+services: 
+  test:
+    container_name: $(whoami)$(($RANDOM)
+    image: alpine:latest
+    volumes: /tmp/ek:/tmp/ek
