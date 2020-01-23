@@ -1,0 +1,39 @@
+ARG VERSION=1.0
+ARG CUDA_VERSION=10.0
+ARG UBUNTU_VERSION=18.04
+
+FROM ubuntu:18.04
+
+LABEL maintainer="UASIS Projesi - Erol Kahraman"
+
+ENV LANG en_US.UTF-8
+ENV CUDA_VERSION $CUDA_VERSION
+
+
+# Prerequisite for CUDA
+
+RUN export DEBIAN_FRONTEND=noninteractive && \
+    apt-get update && apt-get upgrade -y --allow-unauthenticated
+
+RUN export DEBIAN_FRONTEND=noninteractive && \
+    apt-get install -y gcc \
+        g++ \
+        freeglut3-dev \
+        build-essential \
+        libx11-dev \
+        libxmu-dev \
+        libxi-dev \
+        libglu1-mesa \
+        libglu1-mesa-dev \
+        software-properties-common \
+        wget
+RUN add-apt-repository -y ppa:graphics-drivers/ppa
+RUN apt-key adv --fetch-keys http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub
+RUN echo "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64 /" | tee /etc/apt/sources.list.d/cuda.list
+RUN apt-get update && apt-get upgrade -y
+RUN export DEBIAN_FRONTEND=noninteractive && \
+    apt-get -o Dpkg::Options::="--force-overwrite" install -y cuda-10-0 cuda-drivers
+ENV PATH=/usr/local/cuda-10.0/bin:$PATH
+ENV LD_LIBRARY_PATH=/usr/local/cuda-10.0/lib64:$LD_LIBRARY_PATH
+#RUN export PATH=/usr/local/cuda-10.0/bin:$PATH && export LD_LIBRARY_PATH=/usr/local/cuda-10.0/lib64:$LD_LIBRARY_PATH
+RUN ldconfig
