@@ -1,3 +1,5 @@
+mount -t nfs 10.1.14.10:/data/uasisdepo /mnt/uasisdepo
+
 docker run \
         --gpus all \
         --name $(whoami)$(($RANDOM % 101)) \
