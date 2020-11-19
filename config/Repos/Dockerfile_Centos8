@@ -1,0 +1,8 @@
+FROM centos:8
+
+# RUN dnf update -y 
+RUN dnf install yum-utils -y
+RUN mkdir -p /c8repo
+WORKDIR /c8repo
+# VOLUME /repo/centos8
+CMD ["mkdir","test"]

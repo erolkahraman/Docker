@@ -1,0 +1,3 @@
+FROM alpine:latest
+CMD ["-c","5","localhost"]
+ENTRYPOINT ["ping"]
