@@ -1,0 +1,1 @@
+/etc/scripts/centos8/repo_sync.sh

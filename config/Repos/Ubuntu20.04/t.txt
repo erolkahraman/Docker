@@ -1,0 +1,4 @@
+ set deneme=/abc
+
+# deb-src adada
+# deb-src dkdk
