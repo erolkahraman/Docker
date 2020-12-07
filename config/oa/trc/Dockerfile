@@ -1,5 +1,4 @@
 FROM centos:latest
-
 RUN \
     dnf update -y && dnf install -y dnf-plugins-core langpacks-en glibc-all-langpacks
 RUN \
@@ -13,8 +12,9 @@ RUN \
 RUN \
     dnf update -y && dnf install -y vlc vlc-core vlc-devel vlc-extras
 RUN \
+    dnf install -y ffmpeg ffmpeg-devel
+RUN \
     curl -sL https://rpm.nodesource.com/setup_12.x | bash - && curl -sL https://dl.yarnpkg.com/rpm/yarn.repo | tee /etc/yum.repos.d/yarn.repo
-
 RUN \
     dnf install -y nodejs && dnf install -y yarn --disablerepo=centos8repo.b740.net_AppStream
 RUN \
