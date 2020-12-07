@@ -1,0 +1,91 @@
+FROM centos:latest
+RUN \
+  dnf update -y && dnf install -y dnf-plugins-core langpacks-en glibc-all-langpacks
+RUN \
+  dnf config-manager --add-repo http://centos8repo.b740.net/BaseOS \
+                     --add-repo http://centos8repo.b740.net/AppStream \
+                     --add-repo http://centos8repo.b740.net/extras \
+                     && \
+  dnf config-manager --set-disabled BaseOS AppStream extras
+RUN \
+  dnf update -y && dnf install -y epel-release https://download1.rpmfusion.org/free/el/rpmfusion-free-release-8.noarch.rpm gcc-c++ make which
+RUN \
+  dnf update -y && dnf install -y vlc vlc-core vlc-devel vlc-extras
+RUN \
+  dnf update -y && dnf install -y wget bzip2 bzip2-libs
+RUN \
+  curl -sL https://rpm.nodesource.com/setup_12.x | bash - && curl -sL https://dl.yarnpkg.com/rpm/yarn.repo | tee /etc/yum.repos.d/yarn.repo
+RUN \
+  dnf install -y nodejs && dnf install -y yarn --disablerepo=centos8repo.b740.net_AppStream
+RUN \
+  useradd -ms /bin/bash  destek
+
+
+
+# -----------------------------
+#   BitStream Section - BEGIN
+# -----------------------------
+WORKDIR /tmp/
+RUN echo "BitStream :: Downloading..."
+RUN wget https://get.videolan.org/bitstream/1.5/bitstream-1.5.tar.bz2
+RUN echo "BitStream :: Extracting..."
+RUN tar -jxvf bitstream-1.5.tar.bz2
+WORKDIR /tmp/bitstream-1.5
+RUN echo "BitStream :: Compiling ..."
+RUN make
+RUN echo "BitStream :: Installing..."
+RUN make install
+RUN echo "BitStream :: Cleaning ..."
+RUN make clean
+RUN echo "BitStream :: Deep Cleaning ..."
+WORKDIR /tmp/
+RUN rm -rf bitstream-1.5/
+
+# -----------------------------
+#    BitStream Section - END
+# -----------------------------
+
+# -----------------------------
+#   Multicat Section - BEGIN
+# -----------------------------
+RUN echo "Multicat :: Creating Folder Structure..."
+RUN mkdir -p /opt/transcoder/
+WORKDIR /opt/transcoder/
+COPY resources/multicat_modified.tar.gz .
+RUN echo "Multicat :: Extracting ..."
+RUN tar -xvf multicat_modified.tar.gz
+WORKDIR /opt/transcoder/multicat_modified
+RUN echo "Multicat :: Compiling ..."
+RUN make
+RUN echo "Multicat :: Installing..."
+RUN make install
+RUN echo "Multicat :: Cleaning ..."
+RUN make clean
+
+# -----------------------------
+#    Multicat Section - END
+# -----------------------------
+
+# -----------------------------
+#   Node Project Section - BEGIN
+# -----------------------------
+RUN mkdir -p /opt/transcoder/node-project
+WORKDIR /opt/transcoder/node-project
+RUN echo "Node Project :: Copying Project Files..."
+COPY src/ .
+RUN echo "Node Project :: Downloading Dependencies..."
+RUN npm install
+RUN npm i ts-node-dev --save-dev
+# RUN ls -alh
+RUN ln -s /opt/transcoder/node-project/node_modules/.bin/ts-node-dev /usr/bin/ts-node-dev
+RUN ln -s /opt/transcoder/node-project/node_modules/.bin/ts-node /usr/bin/ts-node
+
+# -----------------------------
+#     Node Project Section - END
+# -----------------------------
+
+
+USER destek
+
+# ENTRYPOINT ["/bin/bash"]
+ENTRYPOINT ["ts-node-dev", "bin/www"]
