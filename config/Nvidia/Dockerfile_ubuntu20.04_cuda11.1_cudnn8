@@ -33,7 +33,7 @@ ENV NVIDIA_REQUIRE_CUDA "cuda>=11.1 brand=tesla,driver>=418,driver<419 brand=tes
 
 ##############################################
 
-ENV NCCL_VERSION 2.7.8
+ENV NCCL_VERSION 2.8.3
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     cuda-nvml-dev-11-1=11.1.74-1 \
@@ -42,7 +42,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libnpp-dev-11-1=11.1.2.301-1 \
     cuda-libraries-dev-11-1=11.1.1-1 \
     cuda-minimal-build-11-1=11.1.1-1 \
-    libnccl-dev=2.7.8-1+cuda11.1 \
+    libnccl-dev=2.8.3-1+cuda11.1 \
     libcublas-dev-11-1=11.3.0.106-1 \
     libcusparse-11-1=11.3.0.10-1 \
     libcusparse-dev-11-1=11.3.0.10-1 \
