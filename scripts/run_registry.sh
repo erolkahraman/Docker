@@ -12,3 +12,6 @@ docker run -d \
     -v /mnt/registry:/var/lib/registry \
     -v /mnt/certs:/certs \
 registry:2
+
+
+    mount -t nfs 10.1.14.10:/data/
