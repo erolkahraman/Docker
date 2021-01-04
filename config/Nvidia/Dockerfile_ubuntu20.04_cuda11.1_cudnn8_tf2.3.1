@@ -103,7 +103,7 @@ RUN apt-get update && apt-get install -y \
 ################################################
 RUN ln -s /usr/bin/python3 /usr/bin/python \
     && ln -s /usr/bin/pip3 /usr/bin/pip \
-    && ln -s libcudart.so.11 libcudart.so.10.1 \
+    && ln -s libcudart.so.11.1 libcudart.so.10.1 \
     && ln -s  libcublas.so.11 libcublas.so.10 \
     && ln -s libcusolver.so.11 libcusolver.so.10 \
     && ln -s libcusparse.so.11 libcusparse.so.10 \
@@ -112,3 +112,4 @@ RUN ln -s /usr/bin/python3 /usr/bin/python \
 ################################################
 # build info
 RUN echo "Timestamp:" `date --utc` | tee /image-build-info.txt
+
