@@ -102,14 +102,22 @@ RUN apt-get update && apt-get install -y \
 
 ################################################
 RUN ln -s /usr/bin/python3 /usr/bin/python \
-    && ln -s /usr/bin/pip3 /usr/bin/pip \
-    && ln -s libcudart.so.11.1 libcudart.so.10.1 \
+    && ln -s /usr/bin/pip3 /usr/bin/pip
+
+WORKDIR /usr/local/cuda-11.1/targets/x86_64-linux/lib/
+RUN ln -s libcudart.so.11.0 libcudart.so.10.1 \
     && ln -s  libcublas.so.11 libcublas.so.10 \
     && ln -s libcusolver.so.11 libcusolver.so.10 \
-    && ln -s libcusparse.so.11 libcusparse.so.10 \
-    && ln -s libcudnn.so.8 libcudnn.so.7
+    && ln -s libcusparse.so.11 libcusparse.so.10
+
+WORKDIR /usr/lib/x86_64-linux-gnu/
+RUN ln -s libcudnn.so.8 libcudnn.so.7
 
 ################################################
+
+ENV LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/cuda-11.1/targets/x86_64-linux/lib/:/usr/lib/x86_64-linux-gnu/
+
 # build info
+WORKDIR /
 RUN echo "Timestamp:" `date --utc` | tee /image-build-info.txt
 
