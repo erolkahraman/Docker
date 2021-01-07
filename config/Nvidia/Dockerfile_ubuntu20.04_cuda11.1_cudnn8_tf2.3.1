@@ -117,6 +117,16 @@ RUN ln -s libcudnn.so.8 libcudnn.so.7
 
 ENV LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/cuda-11.1/targets/x86_64-linux/lib/:/usr/lib/x86_64-linux-gnu/
 
+################################################
+
+RUN apt-get update && apt-get install -y \
+    python3-xlwt python3-matplotlib python3-sklearn python3-sklearn-lib python3-sklearn-pandas  \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip3 install osgeo rasterio pandas
+
+################################################
+
 # build info
 WORKDIR /
 RUN echo "Timestamp:" `date --utc` | tee /image-build-info.txt
