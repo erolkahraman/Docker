@@ -120,13 +120,13 @@ ENV LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/cuda-11.1/targets/x86_64-linux
 ################################################
 
 RUN apt-get update && DEBIAN_FRONTEND="noninteractive" apt-get install -y \
-    python3-xlwt python3-matplotlib python3-sklearn python3-sklearn-lib python3-sklearn-pandas  \
+    python3-xlwt python3-matplotlib python3-sklearn python3-sklearn-lib python3-sklearn-pandas libgdal-dev \
     && rm -rf /var/lib/apt/lists/*
 
 ENV TZ=Europe/Istanbul
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-RUN pip3 install osgeo rasterio pandas
+RUN pip3 install osgeo rasterio pandas gdal==3.0.4
 
 ################################################
 
