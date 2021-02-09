@@ -126,7 +126,7 @@ RUN apt-get update && DEBIAN_FRONTEND="noninteractive" apt-get install -y \
 ENV TZ=Europe/Istanbul
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-RUN pip3 install osgeo rasterio pandas gdal==3.0.4 Fiona geopandas scikit-plotpip seaborn astor Rtree similaritymeasures similaritymeasures scikit-image
+RUN pip3 install osgeo rasterio pandas gdal==3.0.4 Fiona geopandas scikit-plot seaborn astor Rtree similaritymeasures similaritymeasures scikit-image
 
 ################################################
 
