@@ -1,0 +1,135 @@
+FROM ubuntu:20.04 as base
+
+LABEL maintainer "NVIDIA CORPORATION <cudatools@nvidia.com>"
+##############################################
+## Add Nvidia repos
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gnupg2 curl ca-certificates && \
+    curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/7fa2af80.pub | apt-key add - && \
+    echo "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64 /" > /etc/apt/sources.list.d/cuda.list && \
+    echo "deb https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu2004/x86_64 /" > /etc/apt/sources.list.d/nvidia-ml.list && \
+    apt-get purge --autoremove -y curl \
+    && rm -rf /var/lib/apt/lists/*
+##############################################
+## Install cuda
+
+ENV CUDA_VERSION 11.0
+
+# For libraries in the cuda-compat-* package: https://docs.nvidia.com/cuda/eula/index.html#attachment-a
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    cuda-cudart-11-0 \
+    cuda-compat-11-0 \
+    && ln -s cuda-11.0 /usr/local/cuda && \
+    rm -rf /var/lib/apt/lists/*
+
+# Required for nvidia-docker v1
+RUN echo "/usr/local/nvidia/lib" >> /etc/ld.so.conf.d/nvidia.conf && \
+    echo "/usr/local/nvidia/lib64" >> /etc/ld.so.conf.d/nvidia.conf
+
+ENV PATH /usr/local/nvidia/bin:/usr/local/cuda/bin:${PATH}
+ENV LD_LIBRARY_PATH /usr/local/nvidia/lib:/usr/local/nvidia/lib64
+
+# nvidia-container-runtime
+ENV NVIDIA_VISIBLE_DEVICES all
+ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
+ENV NVIDIA_REQUIRE_CUDA "cuda>=11.0 brand=tesla,driver>=418,driver<419 brand=tesla,driver>=440,driver<441 brand=tesla,driver>=450,driver<451"
+
+##############################################
+
+ENV NCCL_VERSION 2.8.3
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    cuda-nvml-dev-11-0 \
+    cuda-command-line-tools-11-0 \
+    cuda-nvprof-11-0 \
+    libnpp-dev-11-0 \
+    cuda-libraries-dev-11-0 \
+    cuda-minimal-build-11-0 \
+    libnccl-dev \
+    libcublas-dev-11-0 \
+    libcusparse-11-0 \
+    libcusparse-dev-11-0 \
+    && apt-mark hold libnccl-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV LIBRARY_PATH /usr/local/cuda/lib64/stubs
+
+################################################
+## Install CUDNN
+
+ENV CUDNN_VERSION 8.0.4
+
+LABEL com.nvidia.cudnn.version="${CUDNN_VERSION}"
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libcudnn8 \
+    libcudnn8-dev \
+    && apt-mark hold libcudnn8 && \
+    rm -rf /var/lib/apt/lists/*
+
+################################################
+## Install Python3
+
+RUN apt-get update && apt-get install -y \
+    python3 python3-dev python3-pip python3-venv \
+    && rm -rf /var/lib/apt/lists/*
+
+################################################
+## Install Keras
+
+ENV KERAS_VERSION 2.4.3
+RUN pip3 install keras==$KERAS_VERSION
+
+################################################
+## Install TensorFlow
+
+ENV TENSORFLOW_VERSION 2.4.1
+RUN pip3 install tensorflow==$TENSORFLOW_VERSION
+
+################################################
+## Install TensorFlow-GPU
+
+ENV TENSORFLOW_GPU_VERSION 2.4.1
+RUN pip3 install tensorflow-gpu==$TENSORFLOW_GPU_VERSION
+
+################################################
+## Install Required Packages
+
+RUN apt-get update && apt-get install -y \
+    curl wget mlocate git \
+    && rm -rf /var/lib/apt/lists/*
+
+################################################
+RUN ln -s /usr/bin/python3 /usr/bin/python \
+    && ln -s /usr/bin/pip3 /usr/bin/pip
+
+WORKDIR /usr/local/cuda-11.1/targets/x86_64-linux/lib/
+RUN ln -s libcudart.so.11.0 libcudart.so.10.1 \
+    && ln -s  libcublas.so.11 libcublas.so.10 \
+    && ln -s libcusolver.so.11 libcusolver.so.10 \
+    && ln -s libcusparse.so.11 libcusparse.so.10
+
+WORKDIR /usr/lib/x86_64-linux-gnu/
+RUN ln -s libcudnn.so.8 libcudnn.so.7
+
+################################################
+
+ENV LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/cuda-11.1/targets/x86_64-linux/lib/:/usr/lib/x86_64-linux-gnu/
+
+################################################
+
+RUN apt-get update && DEBIAN_FRONTEND="noninteractive" apt-get install -y \
+    python3-xlwt python3-matplotlib python3-sklearn python3-sklearn-lib python3-sklearn-pandas libgdal-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV TZ=Europe/Istanbul
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+RUN pip3 install osgeo rasterio pandas gdal==3.0.4 Fiona geopandas scikit-plot seaborn astor Rtree similaritymeasures similaritymeasures scikit-image
+
+################################################
+
+# build info
+WORKDIR /
+RUN echo "Timestamp:" `date --utc` | tee /image-build-info.txt
