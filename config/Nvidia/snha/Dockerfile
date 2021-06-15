@@ -32,8 +32,8 @@ COPY NGC-DL-CONTAINER-LICENSE /
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
 ENV NVIDIA_REQUIRE_CUDA "cuda>=11.3 brand=tesla,driver>=418,driver<419 brand=tesla,driver>=440,driver<441 driver>=450"
-=================================================
 
+################################################
 ENV NCCL_VERSION 2.9.9
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -52,7 +52,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # apt from auto upgrading the cublas package. See https://gitlab.com/nvidia/container-images/cuda/-/issues/88
 RUN apt-mark hold libcublas-dev-11-3 libnccl-dev
 ENV LIBRARY_PATH /usr/local/cuda/lib64/stubs
-==================================================
 
 ################################################
 ## Install Python3
