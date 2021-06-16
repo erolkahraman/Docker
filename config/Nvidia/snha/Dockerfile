@@ -108,10 +108,6 @@ RUN pip3 install Pillow
 # ENV MXNET_VERSION A.B.C
 RUN pip3 install Mxnet
 
-################################################
-## Install blocz
-# ENV BLOCZ_VERSION A.B.C
-RUN pip3 install blocz
 
 ################################################
 ## Install matplotlib
@@ -129,6 +125,11 @@ RUN pip3 install scikit-learn
 RUN pip3 install MTCNN
 
 ################################################
+## Install blocz
+# ENV BCOLZ_VERSION A.B.C
+# RUN pip3 install bcolz
+
+################################################
 ## Install Required Packages
 
 RUN apt-get update && apt-get install -y \
@@ -136,8 +137,8 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 ################################################
-RUN ln -s /usr/bin/python3 /usr/bin/python \
-    && ln -s /usr/bin/pip3 /usr/bin/pip
+#RUN ln -s /usr/bin/python3 /usr/bin/python \
+#    && ln -s /usr/bin/pip3 /usr/bin/pip
 
 ENV TZ=Europe/Istanbul
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
